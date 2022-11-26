@@ -1,7 +1,9 @@
 window.addEventListener("load",function()
 {
     const canvas = document.getElementById("canvasOne");
-    const context = canvas.getContext("2d");
+    const context = canvas.getContext("2d",{
+        willReadFrequently: true
+    });
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -21,7 +23,7 @@ window.addEventListener("load",function()
             this.dx = 0;
             this.dy = 0;
             this.vx = 0;
-            this.dy = 0;
+            this.vy = 0;
             this.force = 0;
             this.angle =0;
             this.distance = 0;
@@ -36,8 +38,21 @@ window.addEventListener("load",function()
         }
 
         update(){
-            this.x += (this.originX - this.x) * this.ease;
-            this.y += (this.originY - this.y) * this.ease;
+
+            this.dx = this.effect.mouse.x - this.x;
+            this.dy = this.effect.mouse.y - this.y;
+
+            this.distance =( this.dx * this.dx) + (this.dy * this.dy);
+            this.force = -this.effect.mouse.radius / this.distance;
+
+            if(this.distance  < this.effect.mouse.radius)
+            {
+                this.angle = Math.atan2(this.dy, this.dx);
+                this.vx += this.force  * Math.cos(this.angle);
+                this.vy += this.force * Math.sin(this.angle);
+            }
+            this.x += (this.vx *=  this.friction) + (this.originX - this.x) * this.ease;
+            this.y += (this.vy *= this.friction) + (this.originY - this.y) * this.ease;
         }
     }
 
@@ -54,15 +69,9 @@ window.addEventListener("load",function()
             this.lineHeight = this.fontSize * 0.8;
             this.maxTextWidth = this.canvasWidth  * 0.8;
 
-            this.fontSize = 90;
+            this.fontSize = 96;
 
-            this.textInput = document.getElementById("userInput");
-            this.textInput.addEventListener("keyup", (e) => {
-
-                    this.context.clearRect(0,0,this.canvasWidth, this.canvasHeight);
-                    this.wrapText(e.target.value);
-            });
-
+            
             this.particles = [];
             this.gap = 3;
             this.mouse = {
@@ -70,14 +79,20 @@ window.addEventListener("load",function()
                 x: 0,
                 y: 0 
             };
-
+            
             window.addEventListener("mousemove", (e) =>
             {
                 this.mouse.x = e.x;
                 this.mouse.y = e.y;
                 // console.log(this.mouse.x, this.mouse.y)
             });
+            
+            this.textInput = document.getElementById("userInput");
+            this.textInput.addEventListener("keyup", (e) => {
 
+                    this.context.clearRect(0,0,this.canvasWidth, this.canvasHeight);
+                    this.wrapText(e.target.value);
+            });
         }
 
         wrapText(text){
@@ -97,7 +112,7 @@ window.addEventListener("load",function()
             this.context.lineWidth = 3;
             this.context.strokeStyle = "white";
 
-            this.context.font = this.fontSize + "px Helvetica";
+            this.context.font = this.fontSize + "px Candara";
 
             this.context.fillText(text, this.textX, this.textY);
             this.context.strokeText(text, this.textX, this.textY);
@@ -112,10 +127,14 @@ window.addEventListener("load",function()
                 let testLine = line  + words[i] + ' ';
 
                 if(this.context.measureText(testLine).width > this.maxTextWidth){
+
                     line = words[i] + ' ';
                     lineCounter++;
+
                 } else {
+
                     line = testLine;
+
                 }
                 linesArray[lineCounter] = line;
             }
@@ -174,7 +193,7 @@ window.addEventListener("load",function()
 
     const effect = new Effect(context, canvas.width, canvas.height);
 
-    effect.wrapText("Interesting");
+    effect.wrapText(effect.textInput.value);
     // console.log(effect);
     effect.render();
     
