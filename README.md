@@ -1,6 +1,6 @@
 # Particle effects with vanilla JS
 
-<img src="./assets/demo.gif" width="40" height="40"/>
+<img src="./assets/demo.gif" width="600" height="338"/>
 
 ## How to use it
 
