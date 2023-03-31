@@ -1,6 +1,7 @@
 window.addEventListener("load",function()
 {
     const canvas = document.getElementById("canvasOne");
+
     const context = canvas.getContext("2d",{
         willReadFrequently: true
     });
@@ -42,7 +43,7 @@ window.addEventListener("load",function()
             this.dx = this.effect.mouse.x - this.x;
             this.dy = this.effect.mouse.y - this.y;
 
-            this.distance =( this.dx * this.dx) + (this.dy * this.dy);
+            this.distance =(this.dx * this.dx) + (this.dy * this.dy);
             this.force = -this.effect.mouse.radius / this.distance;
 
             if(this.distance  < this.effect.mouse.radius)
@@ -56,8 +57,11 @@ window.addEventListener("load",function()
         }
     }
 
-    class Effect {
-        constructor(context, canvasWidth, canvasHeight){
+    class Effect
+    {
+
+        constructor(context, canvasWidth, canvasHeight)
+        {
 
             this.context = context;
             this.canvasWidth = canvasWidth;
@@ -86,13 +90,22 @@ window.addEventListener("load",function()
                 this.mouse.y = e.y;
                 // console.log(this.mouse.x, this.mouse.y)
             });
-            
+
             this.textInput = document.getElementById("userInput");
+
             this.textInput.addEventListener("keyup", (e) => {
 
+                    console.log(e);
+
                     this.context.clearRect(0,0,this.canvasWidth, this.canvasHeight);
+
+                    this.textX = this.canvasWidth/2;
+                    this.textY = this.canvasHeight/2;
+
                     this.wrapText(e.target.value);
+
             });
+
         }
 
         wrapText(text){
@@ -113,6 +126,8 @@ window.addEventListener("load",function()
             this.context.strokeStyle = "white";
 
             this.context.font = this.fontSize + "px Candara";
+
+            console.log(`${this.textX},${this.textY}`);
 
             this.context.fillText(text, this.textX, this.textY);
             this.context.strokeText(text, this.textX, this.textY);
@@ -194,9 +209,9 @@ window.addEventListener("load",function()
     const effect = new Effect(context, canvas.width, canvas.height);
 
     effect.wrapText(effect.textInput.value);
-    // console.log(effect);
+
     effect.render();
-    
+
     function animate() {
 
         context.clearRect(0,0,canvas.width, canvas.height);
